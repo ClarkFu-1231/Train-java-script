@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--https://developer.mozilla.org/zh-TW/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript-->
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+    
+   
+</head>
+<body onload="makeDemo()">
+
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+    
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        let ctx = canvas.getContext("2d");
+        //x和y來定義球應該被畫在哪裡
+        let x = canvas.width/2;
+        let y = canvas.height-30;
+        //球看起來好像在移動一樣。定義數值為 dx 以及 dy
+        let dx = 2;
+        let dy = -2;
+        //定義變數 ballRadius 代表球的半徑
+        let ballRadius=10;
+
+        //定義一個槳來擊球
+        let paddleHeight = 10;
+        let paddleWidth = 100;
+        let paddleX = (canvas.width-paddleWidth) / 2;
+        //允許使用者控制槳
+        let rightPressed = false;
+        let leftPressed = false;
+
+        //設置磚變量
+        let brickRowCount = 3;//列數
+        let brickColumnCount = 5;//欄數
+        let brickWidth = 75;
+        let brickHeight = 20;
+        let brickPadding = 10;//
+        let brickOffsetTop = 30;
+        let brickOffsetLeft = 30;
+        //繪製每塊磚的位置x和y位置
+        let bricks = [];
+        for(var c=0; c<brickColumnCount; c++) {
+            bricks[c] = [];
+            for(var r=0; r<brickRowCount; r++) {
+                bricks[c][r] = { x: 0, y: 0, status: 1 };
+            }
+        }
+        
+        //計算分數
+        let score = 0;
+        //計算分數
+        function drawScore(){
+            ctx.font= "16px Arial"
+            ctx.fillStyle = "#D0104C";
+            ctx.fillText("Score:" +score, 8,20);
+        }
+        let lives = 3;
+        function drawLives(){
+            ctx.font = "16px Arial"
+            ctx.fillStyle = "#D0104C";
+            ctx.fillText("Lives:" +lives, canvas.width-65, 20);
+        }
+        //設置兩個事件監聽器
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+        //監聽鼠標移動
+        document.addEventListener("mousemove", mouseMoveHandler, false);
+
+        //將槳移動錨定到鼠標移動
+        function mouseMoveHandler(e){
+            let relativeX = e.clientX - canvas.offsetLeft;
+            if(relativeX > 0 && relativeX < canvas.width){
+                paddleX = relativeX - paddleWidth/2;
+            }
+        }
+        //當keydown事件在鍵盤上的任何鍵上被觸發時（當它們被按下時），該keyDownHandler()函數將被執行。
+        function keyDownHandler(e) {
+        if(e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = true;
+            }
+            else if(e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+        //當keyup事件在鍵盤上的任何鍵上被觸發時（當它們被按下時），該keyupHandler()函數將被執行。
+        function keyUpHandler(e) {
+            if(e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = false;
+            }
+            else if(e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+        /*按下一個鍵時，這些信息存儲在一個變量中。每種情況下的相關變量都設置為true。
+        當按鍵被釋放時，變量被設置回false。*/
+        //碰撞檢測功能
+        function collisionDetection(){
+            for(let c=0; c < brickColumnCount; c++){
+                for(let r=0; r < brickRowCount; r++){
+                    let b = bricks[c][r];
+                    if(b.status==1){
+                        if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+                            dy = -dy;
+                            b.status = 0;
+                            score+=10;
+                            if(score==brickRowCount*brickColumnCount){
+                                alert("YOU WIN, CONGRATULATIONS!");
+                                document.location.reload();
+                                cleanInterval(interval);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        /*
+        1.球的 x 位置大於磚塊的 x 位置。
+        2.球的 x 位置小於磚塊的 x 位置加上其寬度。
+        3.球的 y 位置大於磚塊的 y 位置。
+        4.球的 y 位置小於磚塊的 y 位置加上其高度。
+        */
+
+        
+        //定義一個繪製用的迴圈
+        /*重複執行，用不同的變數改變球的位置或其他物的位置。
+        重複執行一個函式，其中使用 JavaScript timing function*/
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI*2);//更新繪製球的 drawBall() 函數
+            ctx.fillStyle = "#64363C";
+            ctx.fill();
+            ctx.closePath();
+        }
+        //繪製槳的函數
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#8E354A";
+            ctx.fill();
+            ctx.closePath();
+        }
+        //磚畫邏輯
+        function drawBricks() {
+            for(let c=0; c<brickColumnCount; c++) {
+                for(let r=0; r<brickRowCount; r++) {
+                    if(bricks[c][r].status == 1) {
+                        var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+                        var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#BF6766";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+        //讓球動起來
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);//在每個影格開始前清除 canvas
+            drawBricks();//呼叫drawBricks()畫出磚
+            drawBall();//呼叫drawBall()畫出球
+            drawPaddle();//呼叫drawPaddle()畫出槳
+            drawScore();//呼叫drawScore()畫出分數
+            drawLives();//呼叫drawLives()畫出生命數
+            collisionDetection();//碰撞檢測
+            
+            //遇牆反彈
+            if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            
+            if(y + dy < ballRadius) {
+                dy = -dy;
+            } else if(y + dy > canvas.height-ballRadius) {
+                //讓球拍擊球
+                if(x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                }else {
+                    lives--;
+                    if(!lives){
+                        alert("GAME OVER");
+                        document.location.reload();
+                        
+                    }else{
+                        x = canvas.width/2;
+                        y = canvas.height-30;
+                        dx = 3;
+                        dy = -3;
+                        paddleX = (canvas.width-paddleWidth)/2;
+                    }
+                }
+            }
+            //槳葉移動邏輯
+            if(rightPressed) {
+                paddleX += 7;
+                //僅在畫布的邊界內移動槳
+                if (paddleX + paddleWidth > canvas.width){
+                    paddleX = canvas.width - paddleWidth;
+                }
+            }else if(leftPressed) {
+                paddleX -= 7;
+                //僅在畫布的邊界內移動槳
+                if (paddleX < 0){
+                    paddleX = 0;
+                }
+            }
+            x += dx;
+            y += dy;
+            requestAnimationFrame(draw);
+        }
+        /*let interval = setInterval(draw, 10);//etInterval 無限循環的特性， draw() 函數將會每 10 毫秒被呼叫一次除非我們將它停止*/
+        draw();
+    </script>
+
+    
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>長條圖-1</title>
+</head>
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script >
+        let dataSet = [70, 130, 120, 95, 80, 170, 143]//建立簡單資料集
+
+        //宣告變數
+        var width = 400 // svg寬度
+        var height = 400 // svg寬度
+        var padding = { 
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20} // 內距
+        var graphicHeight = height - padding.top - padding.bottom // 圖表高度為svg高度扣掉內距
+        var rectStep = 35 // 各別長條圖的距離
+        var rectWidth = 30 // 長條圖的寬度
+        var maxValue = 200 // 數值最大值
+
+        //html tag
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+        
+        //繪圖步驟來實作：設定選擇集 → 綁定資料 → 綁作元素。
+        var rect = svg.selectAll("rect")
+        .data(dataSet)
+        .enter()//暫不考慮更新資料的方法，先使用enter()方式來繪圖。
+        .append("rect")
+        .attr("fill", "steelblue")
+        .attr("x", function(d,i){
+            return padding.left + i * rectStep
+        })
+        .attr("y", function(d){
+            return height - padding.bottom - graphicHeight * (d / maxValue) // 畫面高度扣掉長條圖高度作為繪製長條圖的起點
+        })
+        .attr("width", rectWidth)
+        .attr("height", function(d){
+            return graphicHeight * (d / maxValue) // 使用maxValue最大值作為畫面高度100%計算該筆資料佔畫面的百分比
+        })
+        //使用<text>加上長條圖的數字
+        var text = svg.selectAll("text")
+            .data(dataSet)
+            .enter()
+            .append("text")
+            .attr("fill","white")
+            .attr("font-size","14px")
+            .attr("text-anchor","middle")
+            .attr("x", function(d,i){
+                return padding.left + i * rectStep
+            })
+            .attr("y", function(d){
+                //return height - padding.bottom - d
+                return height - padding.bottom - graphicHeight * (d / maxValue)
+            })
+            .attr("dx", rectWidth/2)
+            .attr("dy", "1em")
+            .text(function(d){
+                return d
+            })
+    </script>
+   
+</body>
+</html>

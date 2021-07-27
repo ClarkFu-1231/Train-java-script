@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>長條圖2</title>
+</head>
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <button type="button" onclick="getData()">
+        繪製圖表
+    </button>
+    <script>
+        //var dataSet = [50, 43, 120, 87, 99, 167, 142]
+        let dataSet = []
+
+        var width = 400 // svg寬度
+        var height = 400 // svg寬度
+        var padding = { 
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20
+        } // 內距
+        var graphicHeight = height - padding.top - padding.bottom // 圖表高度為svg高度扣掉內距
+        var rectStep = 35 // 各別長條圖的距離
+        var rectWidth = 30 // 長條圖的寬度
+        var maxValue = 200 // 數值最大值
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            
+        function getData(){
+            let arr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            dataSet = arr.map(function(){
+            return Math.floor(Math.random()*150) + 50
+        })
+        
+        draw()
+        }
+
+        function draw(){
+
+            // -- 繪製長條圖 --
+            var updateRect = svg.selectAll("rect").data(dataSet)
+            var enterRect = updateRect.enter()
+            var exitRect = updateRect.exit()
+
+            fillRect(updateRect)
+            fillRect(enterRect.append("rect"))
+                exitRect.remove()
+            
+            // -- 繪製數字 --
+            var updateText = svg.selectAll("text").data(dataSet)
+            var enterText = updateText.enter()
+            var exitText = updateText.exit()
+
+            fillText(updateText)
+            fillText(enterText.append("text"))
+                exitText.remove()
+            
+        }
+
+        function fillRect(target){
+            target.attr("fill", "steelblue")
+            .attr("x", function(d,i){
+                return padding.left + i * rectStep
+            })
+            .attr("y", function(d){
+            return height - padding.bottom - graphicHeight * (d / maxValue) // 畫面高度扣掉長條圖高度作為繪製長條圖的起點
+            })
+            .attr("width", rectWidth)
+            .attr("height", function(d){
+            return graphicHeight * (d / maxValue) // 使用maxValue最大值作為畫面高度100%計算該筆資料佔畫面的百分比
+            })
+        }
+
+        function fillText(target){
+            target.attr("fill","white")
+            .attr("font-size","14px")
+            .attr("text-anchor","middle")
+            .attr("x", function(d,i){
+                return padding.left + i * rectStep
+            })
+            .attr("y", function(d){
+                //return height - padding.bottom - d
+            return height - padding.bottom - graphicHeight * (d / maxValue)
+            })
+            .attr("dx", rectWidth/2)
+            .attr("dy", "1em")
+            .text(function(d){
+                return d
+            })
+        }
+
+    </script>
+</body>
+</html>

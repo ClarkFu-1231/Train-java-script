@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <svg></svg>
+    <script src="https://d3js.org/d3.v7.min.js"></script><!--D3.js函式庫-->
+    <script>const data = [
+        {name: "E", value: 0.12702},
+        {name: "T", value: 0.09056},
+        {name: "A", value: 0.08167},
+        {name: "O", value: 0.07507},
+        {name: "I", value: 0.06966},
+        {name: "N", value: 0.06749},
+        {name: "S", value: 0.06327},
+        {name: "H", value: 0.06094},
+        {name: "R", value: 0.05987},
+        {name: "D", value: 0.04253},
+        {name: "L", value: 0.04025},
+        {name: "C", value: 0.02782},
+        {name: "U", value: 0.02758},
+        {name: "M", value: 0.02406},
+        {name: "W", value: 0.0236},
+        {name: "F", value: 0.02288},
+        {name: "G", value: 0.02015},
+        {name: "Y", value: 0.01974},
+        {name: "P", value: 0.01929},
+        {name: "B", value: 0.01492},
+        {name: "V", value: 0.00978},
+        {name: "K", value: 0.00772},
+        {name: "J", value: 0.00153},
+        {name: "X", value: 0.0015},
+        {name: "Q", value: 0.00095},
+        {name: "Z", value: 0.00074},
+        // ["letter", "frequency"]
+      ]
+      
+      const width = 800;
+      const height = 800;
+      const padding = {
+        top: 20,
+        right: 0,
+        bottom: 30,
+        left: 40
+      };
+      
+      const svg = d3.select('svg').attr('width', width).attr('height', height).call(zoom)
+      
+      const xScale = d3.scaleBand()
+          .domain(data.map(d => d.name))
+          .range([padding.left, width - padding.right])
+          .padding(0.1)
+      
+      const yScale = d3.scaleLinear()
+          .domain([0, d3.max(data, d => d.value)]).nice()
+          .range([height - padding.bottom, padding.top])
+      
+      const xAxis = g => g
+          .attr("transform", `translate(0,${height - padding.bottom})`)
+          .call(d3.axisBottom(xScale).tickSizeOuter(0))
+      
+      const yAxis = g => g
+          .attr("transform", `translate(${padding.left},0)`)
+          .call(d3.axisLeft(yScale))
+          .call(g => g.select(".domain").remove())
+      
+      svg.append("g")
+            .attr("class", "bars")
+            .attr("fill", "steelblue")
+          .selectAll("rect")
+          .data(data)
+          .join("rect")
+            .each(data => console.log(data))
+            .attr("x", d => xScale(d.name))
+            .attr("y", d => yScale(d.value))
+            .attr("height", d => yScale(0) - yScale(d.value))
+            .attr("width", xScale.bandwidth());
+      
+      svg.append("g")
+            .attr("class", "x-axis")
+            .call(xAxis);
+      
+        svg.append("g")
+            .attr("class", "y-axis")
+            .call(yAxis);
+      
+      
+      function zoom(svg) {
+        const extent = [[padding.left, padding.top], [width - padding.right, height - padding.top]];
+       
+        svg.call(d3.zoom()
+            .scaleExtent([1, 8])
+            .translateExtent(extent)
+            .extent(extent)
+            .on("zoom", zoomed));
+      
+        function zoomed(event) {
+          xScale.range([padding.left, width - padding.right].map(d => event.transform.applyX(d)));
+          svg.selectAll(".bars rect").attr("x", d => xScale(d.name)).attr("width", xScale.bandwidth());
+          svg.selectAll(".x-axis").call(xAxis);
+        }
+      }</script>
+</body>
+</html>

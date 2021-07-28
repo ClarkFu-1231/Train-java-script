@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>狐群狗黨</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script><!--Use D3 library from CDN-->
+    <style>
+        div {
+            height: 100px;
+            width: 100px;
+            background-color: gray;
+            margin:5px;
+        }
+        #container{
+            height: 100px;
+            width: 100px;
+            background-color: black;
+        }
+        #container_1{
+            height: 100px;
+            width: 100px;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <p>Error: 100%</p>
+    <p>Warning: 80%</p>
+    
+    <table>
+        <!--Mouse evnet handling-->
+        <tr>
+            <td><div class="div_1"></div></td>
+            <td><div class="div_2"></div></td>
+            <td><div class="div_1"></div></td>
+            <td><div class="div_2"></div></td>
+        </tr>
+        <tr>
+            <td><div class="div_2"></div></td>
+            <td><div class="div_1"></div></td>
+            <td><div class="div_2"></div></td>
+            <td><div class="div_1"></div></td>
+        </tr>
+        <!--Animation -->
+        <tr>
+            <td><div id="container"></div></td>
+            <td><div id="container_1"></div></td>
+        </tr>
+    </table>
+
+   
+
+    <script>
+        d3.selectAll("p").style("color", function(d,i){
+            let text = this.innerText;
+
+            if(text.indexOf("Error") >=0){//indexOf判定句子是否有此字
+                return "#CC543A";
+            }else if(text.indexOf("Warning") >= 0){
+                return "#E2943B";
+            }
+
+        });
+        //Event Handling :demonstrates handling of mouseover and mouseout events.
+        d3.selectAll(".div_1").on("mouseover", function(){ 
+            d3.select(this).style("background-color","orange");
+
+            //Get current event info
+            console.log(d3.event);
+
+            //Get x & y co-ordinates
+            console.log(d3.mouse(this));
+        })
+        .on("mouseout", function(){
+            d3.select(this)
+                .style("background-color", "#0089A7")
+        });
+        d3.selectAll(".div_2").on("mouseover", function(){ 
+            d3.select(this).style("background-color","purple");
+
+            //Get current event info
+            console.log(d3.event);
+
+            //Get x & y co-ordinates
+            console.log(d3.mouse(this));
+        })
+        .on("mouseout", function(){
+            d3.select(this)
+                .style("background-color", "grey")
+        });
+
+        //Animation in D3
+        d3.select("#container")
+            .transition()
+            .duration(1000)
+            .style("background-color", "#DB4D6D");
+
+        let t =d3.transition()
+            .duration(800)
+            d3.select("#container_1")
+                .transition(t)
+                .style("background-color", "#DB4D6D");
+
+        
+    </script>
+</body>
+</html>

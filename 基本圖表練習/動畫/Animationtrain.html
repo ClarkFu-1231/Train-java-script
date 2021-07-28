@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    
+    <title>Welcome D3</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script><!--Use D3 library from CDN-->
+</head>
+<body>
+    <script>
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", 500)
+            .attr("height", 500);
+    
+    
+        var bar1 = svg.append("rect")
+            .attr("fill", "blue")
+            .attr("x", 100)
+            .attr("y", 20)
+            .attr("height", 20)//初始高度
+            .attr("width", 10)
+    
+        var bar2 = svg.append("rect")
+            .attr("fill", "blue")
+            .attr("x", 120)
+            .attr("y", 20)
+            .attr("height", 20)
+            .attr("width", 10)
+        var bar3 = svg.append("rect")
+            .attr("fill", "blue")
+            .attr("x", 140)
+            .attr("y", 20)
+            .attr("height", 20)
+            .attr("width", 10)
+        update();
+    
+    function update() {
+        bar1.transition()
+            .ease(d3.easeLinear)
+            .duration(2000)//持續的時間
+            .attr("height",500)//最終高度
+    
+        bar2.transition()
+            .ease(d3.easeLinear)
+            .duration(2000)
+            .delay(1000)//第一個bar之1000毫秒進行動畫處理
+            //The delay() function sets the delay parameter for each element in the selection on which the transition is applied. 
+            //The transition will start after the specified delay value.
+            .attr("height",500)
+
+        bar3.transition()
+            .ease(d3.easeLinear)
+            .duration(2000)
+            .delay(1500)//第一個bar(持續2000毫秒)延遲後1500毫秒進行動畫處理
+            .attr("height",500)
+    }
+    </script>
+</body>
+</html>

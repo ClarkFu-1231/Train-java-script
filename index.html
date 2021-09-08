@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>線圖</title>
+    </head>
+    <body>
+      <div>
+        <select id="select-stock">
+          <option selected="selected" value="TW1Y">台積電近一年股價</option>
+          <!--<option value="TW6M">台積電近半年股價</option>-->
+        </select>
+      </div>
+      <div>
+      <div id="choosesection">
+        <div class="item">
+          <input type="checkbox" id="close" >
+          <label for="close">Close Price</label>
+        </div>
+        <div class="item">
+          <input type="checkbox" id="candlestick" >
+          <label for="candlestick">K線圖</label>
+        </div>
+        <div class="item">
+          <input type="checkbox" id="ma10" >
+          <label for="moving-average">Moving Average - 10</label>
+        </div>
+        <div class="item">
+          <input type="checkbox" id="ma30" >
+          <label for="moving-average">Moving Average - 30</label>
+        </div>
+        <div class="item">
+          <input type="checkbox" id="ma50" >
+          <label for="moving-average">Moving Average -50</label>
+        </div>
+        
+      </div>
+      <div id="chart"></div>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="techanjs.js"></script>
+    <script type="text/javascript" src="chart.js"></script>
+
+    </body>
+</html>
